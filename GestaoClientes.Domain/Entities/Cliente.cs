@@ -1,4 +1,5 @@
 using GestaoClientes.Domain.Common;
+using GestaoClientes.Domain.ValueObjects;
 using GestaoClientes.Domain.Exceptions;
 using System;
 
@@ -7,16 +8,17 @@ namespace GestaoClientes.Domain.Entities
     public class Cliente : Entity
     {
         public string NomeFantasia { get; private set; }
-        public string CnpjNumero { get; private set; } // Será substituído pelo Value Object depois
+        public Cnpj Cnpj { get; private set; }
         public bool Ativo { get; private set; }
 
         // Construtor privado para ORM
         protected Cliente() { }
 
-        public Cliente(string nomeFantasia, string cnpjNumero)
+        // Construtor principal
+        public Cliente(string nomeFantasia, Cnpj cnpj)
         {
             SetNomeFantasia(nomeFantasia);
-            SetCnpj(cnpjNumero);
+            SetCnpj(cnpj);
             Ativo = true;
             MarcarComoAtualizado();
         }
@@ -33,21 +35,18 @@ namespace GestaoClientes.Domain.Entities
             MarcarComoAtualizado();
         }
 
-        public void SetCnpj(string cnpjNumero)
+        public void SetCnpj(Cnpj cnpj)
         {
-            if (string.IsNullOrWhiteSpace(cnpjNumero))
-                throw new DomainException("CNPJ não pode ser vazio ou nulo.");
-
-            // Validação básica - será substituída pelo Value Object
-            var cnpjLimpo = cnpjNumero.Replace(".", "").Replace("/", "").Replace("-", "");
-            if (cnpjLimpo.Length != 14)
-                throw new DomainException("CNPJ deve ter 14 dígitos.");
-
-            CnpjNumero = cnpjLimpo;
+            Cnpj = cnpj ?? throw new DomainException("CNPJ não pode ser nulo.");
             MarcarComoAtualizado();
         }
 
-        // Tarefa 2.3: Métodos de domínio
+        public void AlterarCnpj(Cnpj novoCnpj)
+        {
+            Cnpj = novoCnpj ?? throw new DomainException("CNPJ não pode ser nulo.");
+            MarcarComoAtualizado();
+        }
+
         public void Ativar()
         {
             Ativo = true;
