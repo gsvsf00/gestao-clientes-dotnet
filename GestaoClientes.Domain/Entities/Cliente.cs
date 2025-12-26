@@ -1,4 +1,5 @@
 using GestaoClientes.Domain.Common;
+using GestaoClientes.Domain.Exceptions;
 using System;
 
 namespace GestaoClientes.Domain.Entities
@@ -23,10 +24,10 @@ namespace GestaoClientes.Domain.Entities
         public void SetNomeFantasia(string nomeFantasia)
         {
             if (string.IsNullOrWhiteSpace(nomeFantasia))
-                throw new ArgumentException("Nome fantasia não pode ser vazio ou nulo.");
+                throw new DomainException("Nome fantasia não pode ser vazio ou nulo.");
 
             if (nomeFantasia.Length < 3)
-                throw new ArgumentException("Nome fantasia deve ter pelo menos 3 caracteres.");
+                throw new DomainException("Nome fantasia deve ter pelo menos 3 caracteres.");
 
             NomeFantasia = nomeFantasia.Trim();
             MarcarComoAtualizado();
@@ -35,12 +36,12 @@ namespace GestaoClientes.Domain.Entities
         public void SetCnpj(string cnpjNumero)
         {
             if (string.IsNullOrWhiteSpace(cnpjNumero))
-                throw new ArgumentException("CNPJ não pode ser vazio ou nulo.");
+                throw new DomainException("CNPJ não pode ser vazio ou nulo.");
 
             // Validação básica - será substituída pelo Value Object
             var cnpjLimpo = cnpjNumero.Replace(".", "").Replace("/", "").Replace("-", "");
             if (cnpjLimpo.Length != 14)
-                throw new ArgumentException("CNPJ deve ter 14 dígitos.");
+                throw new DomainException("CNPJ deve ter 14 dígitos.");
 
             CnpjNumero = cnpjLimpo;
             MarcarComoAtualizado();

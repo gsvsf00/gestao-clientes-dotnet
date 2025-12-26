@@ -1,4 +1,5 @@
 using GestaoClientes.Domain.Entities;
+using GestaoClientes.Domain.Exceptions;
 using Xunit;
 
 namespace GestaoClientes.Tests.Domain.Entities
@@ -12,7 +13,7 @@ namespace GestaoClientes.Tests.Domain.Entities
         public void Construtor_ComNomeFantasiaInvalido_DeveLancarExcecao(string nomeInvalido)
         {
             // Arrange & Act & Assert
-            var exception = Assert.Throws<ArgumentException>(
+            var exception = Assert.Throws<DomainException>(
                 () => new Cliente(nomeInvalido, "12345678000195")
             );
             
