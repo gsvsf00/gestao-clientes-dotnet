@@ -26,26 +26,26 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
     }
 
     // Busca um cliente pelo ID, consultando primeiro o cache Redis.
-    // Se não encontrar no cache (cache miss), consulta o repositório real e popula o cache.
+    // Se não encontrar no cache, consulta o repositório real e popula o cache.
     public async Task<Cliente?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var chaveCache = ObterChaveCache(id);
         
-        // Tenta obter do cache primeiro
+        // Tenta obter do cache 
         var valorCache = await _redis.StringGetAsync(chaveCache);
         
         if (valorCache.HasValue)
         {
-            // Cache hit - deserializa e retorna
+            //Deserializa e retorna
             return DeserializarCliente(valorCache!);
         }
 
-        // Cache miss - consulta o repositório real
+        // Consulta o repositório real
         var cliente = await _repositorioReal.GetByIdAsync(id, cancellationToken);
         
         if (cliente != null)
         {
-            // Popula o cache para próximas consultas
+            // Popula o cache
             var valorSerializado = SerializarCliente(cliente);
             await _redis.StringSetAsync(chaveCache, valorSerializado, _tempoDeExpiracao);
         }
@@ -53,19 +53,18 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
         return cliente;
     }
 
-    // Busca um cliente pelo CNPJ. Não utiliza cache nesta implementação.
+    // Busca um cliente pelo CNPJ.
     public async Task<Cliente?> GetByCnpjAsync(Cnpj cnpj, CancellationToken cancellationToken = default)
     {
-        // Para GetByCnpj, não implementamos cache por enquanto
         return await _repositorioReal.GetByCnpjAsync(cnpj, cancellationToken);
     }
 
-    // Adiciona um novo cliente. Popula o cache imediatamente após adicionar.
+    // Adiciona um novo cliente.
     public async Task<Cliente> AddAsync(Cliente cliente, CancellationToken cancellationToken = default)
     {
         var clienteAdicionado = await _repositorioReal.AddAsync(cliente, cancellationToken);
         
-        // Popula o cache imediatamente após adicionar
+        // Popula o cache
         var chaveCache = ObterChaveCache(clienteAdicionado.Id);
         var valorSerializado = SerializarCliente(clienteAdicionado);
         await _redis.StringSetAsync(chaveCache, valorSerializado, _tempoDeExpiracao);
@@ -102,7 +101,7 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
 
             var cnpj = new Cnpj(dto.Cnpj);
             
-            // Cria instância usando o construtor protegido via reflexão
+            // Cria instância usando o construtor protegido
             var cliente = (Cliente)Activator.CreateInstance(
                 typeof(Cliente),
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
@@ -110,17 +109,17 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
                 new object[] { dto.NomeFantasia, cnpj },
                 null)!;
 
-            // Define o ID usando reflexão
+            // Define o ID
             var idProperty = typeof(Cliente).BaseType!.GetProperty("Id", 
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
             idProperty?.SetValue(cliente, dto.Id);
 
-            // Define DataCriacao
+            // Define a Data de Criação
             var dataCriacaoProperty = typeof(Cliente).BaseType!.GetProperty("DataCriacao",
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
             dataCriacaoProperty?.SetValue(cliente, dto.DataCriacao);
 
-            // Define DataAtualizacao
+            // Define a Data de Atualização
             var dataAtualizacaoProperty = typeof(Cliente).BaseType!.GetProperty("DataAtualizacao",
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
             dataAtualizacaoProperty?.SetValue(cliente, dto.DataAtualizacao);
