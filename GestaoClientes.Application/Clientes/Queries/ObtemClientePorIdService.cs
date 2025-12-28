@@ -3,7 +3,7 @@ using GestaoClientes.Application.Common.Exceptions;
 
 namespace GestaoClientes.Application.Clientes.Queries;
 
-public class ObtemClientePorIdService
+public class ObtemClientePorIdService : IObtemClientePorIdService
 {
     private readonly IClienteRepository _clienteRepository;
 

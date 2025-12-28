@@ -5,7 +5,7 @@ using GestaoClientes.Domain.ValueObjects;
 
 namespace GestaoClientes.Application.Clientes.Commands;
 
-public class CriaClienteService
+public class CriaClienteService : ICriaClienteService
 {
     private readonly IClienteRepository _clienteRepository;
 
