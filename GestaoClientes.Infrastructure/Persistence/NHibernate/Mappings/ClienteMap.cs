@@ -4,9 +4,7 @@ using GestaoClientes.Domain.Entities;
 
 namespace GestaoClientes.Infrastructure.Persistence.NHibernate.Mappings;
 
-/// <summary>
-/// Mapeamento da entidade Cliente para o NHibernate.
-/// </summary>
+// Mapeamento da entidade Cliente para o NHibernate
 public class ClienteMap : ClassMapping<Cliente>
 {
     public ClienteMap()
