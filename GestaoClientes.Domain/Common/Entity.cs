@@ -4,9 +4,9 @@ namespace GestaoClientes.Domain.Common
 {
     public abstract class Entity
     {
-        public Guid Id { get; protected set; }
-        public DateTime DataCriacao { get; protected set; }
-        public DateTime? DataAtualizacao { get; protected set; }
+        public virtual Guid Id { get; protected set; }
+        public virtual DateTime DataCriacao { get; protected set; }
+        public virtual DateTime? DataAtualizacao { get; protected set; }
 
         protected Entity()
         {
