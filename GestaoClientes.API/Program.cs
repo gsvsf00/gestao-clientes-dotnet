@@ -1,16 +1,50 @@
+using GestaoClientes.Application.Clientes.Commands;
+using GestaoClientes.Application.Clientes.Queries;
+using GestaoClientes.Application.Common.Interfaces;
+using GestaoClientes.Infrastructure.Persistence.NHibernate;
+using GestaoClientes.Infrastructure.Repositories;
+using NHibernate;
+using NHibernateSession = NHibernate.ISession;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configuração do NHibernate
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? "Data Source=gestao_clientes.db;Version=3;";
+var sessionFactory = NHibernateSessionFactory.GetSessionFactory(connectionString);
 
 // Configuração do Redis
 var redisConnectionString = builder.Configuration.GetConnectionString("Redis") 
     ?? "localhost:6379";
 var redis = ConnectionMultiplexer.Connect(redisConnectionString);
 
+// Configuração de serviços
+builder.Services.AddSingleton<ISessionFactory>(sessionFactory);
+builder.Services.AddScoped<NHibernateSession>(provider =>
+{
+    var factory = provider.GetRequiredService<ISessionFactory>();
+    return factory.OpenSession();
+});
 builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
 
+// Registro dos repositórios (Decorator Pattern: Cache → NHibernate)
+builder.Services.AddScoped<ClienteRepositoryNHibernate>();
+builder.Services.AddScoped<IClienteRepository>(provider =>
+{
+    var session = provider.GetRequiredService<NHibernateSession>();
+    var redisConnection = provider.GetRequiredService<IConnectionMultiplexer>();
+    var repositorioNHibernate = new ClienteRepositoryNHibernate(session);
+    return new ClienteRepositoryCacheDecorator(repositorioNHibernate, redisConnection);
+});
+
+// Registro dos serviços de aplicação
+builder.Services.AddScoped<CriaClienteService>();
+builder.Services.AddScoped<ObtemClientePorIdService>();
+
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -22,29 +56,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+app.UseAuthorization();
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
