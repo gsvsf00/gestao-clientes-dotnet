@@ -31,23 +31,38 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
     {
         var chaveCache = ObterChaveCache(id);
         
-        // Tenta obter do cache 
+        // Tenta obter do cache (ignora erros do Redis)
+        try
+        {
         var valorCache = await _redis.StringGetAsync(chaveCache);
         
         if (valorCache.HasValue)
         {
-            //Deserializa e retorna
-            return DeserializarCliente(valorCache!);
+                var clienteCache = DeserializarCliente(valorCache!);
+                if (clienteCache != null)
+                    return clienteCache;
+            }
+        }
+        catch
+        {
+            // Ignora erros do Redis e continua para consultar o repositório real
         }
 
         // Consulta o repositório real
         var cliente = await _repositorioReal.GetByIdAsync(id, cancellationToken);
         
+        // Popula o cache (ignora erros do Redis)
         if (cliente != null)
         {
-            // Popula o cache
+            try
+            {
             var valorSerializado = SerializarCliente(cliente);
             await _redis.StringSetAsync(chaveCache, valorSerializado, _tempoDeExpiracao);
+            }
+            catch
+            {
+                // Ignora erros do Redis para não bloquear a consulta
+            }
         }
 
         return cliente;
@@ -64,10 +79,17 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
     {
         var clienteAdicionado = await _repositorioReal.AddAsync(cliente, cancellationToken);
         
-        // Popula o cache
+        // Popula o cache (ignora erros do Redis para não bloquear a operação)
+        try
+        {
         var chaveCache = ObterChaveCache(clienteAdicionado.Id);
         var valorSerializado = SerializarCliente(clienteAdicionado);
         await _redis.StringSetAsync(chaveCache, valorSerializado, _tempoDeExpiracao);
+        }
+        catch
+        {
+            // Ignora erros do Redis para não bloquear a persistência
+        }
         
         return clienteAdicionado;
     }

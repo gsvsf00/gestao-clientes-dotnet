@@ -25,9 +25,10 @@ public class ClienteRepositoryNHibernate : IClienteRepository
     // Busca um cliente pelo CNPJ
     public async Task<Cliente?> GetByCnpjAsync(Cnpj cnpj, CancellationToken cancellationToken = default)
     {
-        return await _sessao.Query<Cliente>()
-            .Where(cliente => cliente.Cnpj.Numero == cnpj.Numero)
-            .FirstOrDefaultAsync(cancellationToken);
+        // Usa HQL porque o NHibernate não consegue navegar em Value Objects via LINQ
+        var query = _sessao.CreateQuery("FROM Cliente c WHERE c.Cnpj = :cnpj");
+        query.SetParameter("cnpj", cnpj);
+        return await query.UniqueResultAsync<Cliente>(cancellationToken);
     }
 
     // Adiciona um novo cliente ao banco de dados

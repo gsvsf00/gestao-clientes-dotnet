@@ -7,9 +7,9 @@ namespace GestaoClientes.Domain.Entities
 {
     public class Cliente : Entity
     {
-        public string NomeFantasia { get; private set; }
-        public Cnpj Cnpj { get; private set; }
-        public bool Ativo { get; private set; }
+        public virtual string NomeFantasia { get; protected set; } = string.Empty;
+        public virtual Cnpj Cnpj { get; protected set; } = null!;
+        public virtual bool Ativo { get; protected set; }
 
         // Construtor privado para ORM
         protected Cliente() { }
@@ -23,7 +23,7 @@ namespace GestaoClientes.Domain.Entities
             MarcarComoAtualizado();
         }
 
-        public void SetNomeFantasia(string nomeFantasia)
+        public virtual void SetNomeFantasia(string nomeFantasia)
         {
             if (string.IsNullOrWhiteSpace(nomeFantasia))
                 throw new DomainException("Nome fantasia não pode ser vazio ou nulo.");
@@ -35,25 +35,25 @@ namespace GestaoClientes.Domain.Entities
             MarcarComoAtualizado();
         }
 
-        public void SetCnpj(Cnpj cnpj)
+        public virtual void SetCnpj(Cnpj cnpj)
         {
             Cnpj = cnpj ?? throw new DomainException("CNPJ não pode ser nulo.");
             MarcarComoAtualizado();
         }
 
-        public void AlterarCnpj(Cnpj novoCnpj)
+        public virtual void AlterarCnpj(Cnpj novoCnpj)
         {
             Cnpj = novoCnpj ?? throw new DomainException("CNPJ não pode ser nulo.");
             MarcarComoAtualizado();
         }
 
-        public void Ativar()
+        public virtual void Ativar()
         {
             Ativo = true;
             MarcarComoAtualizado();
         }
 
-        public void Desativar()
+        public virtual void Desativar()
         {
             Ativo = false;
             MarcarComoAtualizado();
