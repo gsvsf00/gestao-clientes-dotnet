@@ -1,4 +1,13 @@
+using StackExchange.Redis;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Configuração do Redis
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis") 
+    ?? "localhost:6379";
+var redis = ConnectionMultiplexer.Connect(redisConnectionString);
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
