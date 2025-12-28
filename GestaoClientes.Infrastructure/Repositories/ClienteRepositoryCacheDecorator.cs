@@ -97,11 +97,13 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
         try
         {
             var dto = JsonSerializer.Deserialize<ClienteCacheDto>(json);
-            if (dto == null) return null;
+            if (dto == null) 
+                return null;
 
             var cnpj = new Cnpj(dto.Cnpj);
             
-            // Cria instância usando o construtor protegido
+            // Cria instância usando o construtor protegido via reflection
+            // Nota: Reflection é necessário aqui pois a entidade tem construtor protegido para ORM
             var cliente = (Cliente)Activator.CreateInstance(
                 typeof(Cliente),
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
@@ -109,23 +111,27 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
                 new object[] { dto.NomeFantasia, cnpj },
                 null)!;
 
-            // Define o ID
-            var idProperty = typeof(Cliente).BaseType!.GetProperty("Id", 
+            // Restaura propriedades da entidade base e da classe
+            var tipoCliente = typeof(Cliente);
+            var tipoBase = tipoCliente.BaseType!;
+            
+            // Restaura Id
+            var idProperty = tipoBase.GetProperty("Id", 
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
             idProperty?.SetValue(cliente, dto.Id);
 
-            // Define a Data de Criação
-            var dataCriacaoProperty = typeof(Cliente).BaseType!.GetProperty("DataCriacao",
+            // Restaura DataCriacao
+            var dataCriacaoProperty = tipoBase.GetProperty("DataCriacao",
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
             dataCriacaoProperty?.SetValue(cliente, dto.DataCriacao);
 
-            // Define a Data de Atualização
-            var dataAtualizacaoProperty = typeof(Cliente).BaseType!.GetProperty("DataAtualizacao",
+            // Restaura DataAtualizacao
+            var dataAtualizacaoProperty = tipoBase.GetProperty("DataAtualizacao",
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
             dataAtualizacaoProperty?.SetValue(cliente, dto.DataAtualizacao);
 
-            // Define Ativo
-            var ativoProperty = typeof(Cliente).GetProperty("Ativo",
+            // Restaura Ativo
+            var ativoProperty = tipoCliente.GetProperty("Ativo",
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
             ativoProperty?.SetValue(cliente, dto.Ativo);
 
@@ -133,6 +139,7 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
         }
         catch
         {
+            // Em caso de erro na deserialização, retorna null para forçar consulta ao repositório real
             return null;
         }
     }

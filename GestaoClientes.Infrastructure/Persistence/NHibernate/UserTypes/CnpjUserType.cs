@@ -8,9 +8,7 @@ using System.Data.Common;
 
 namespace GestaoClientes.Infrastructure.Persistence.NHibernate.UserTypes;
 
-/// <summary>
-/// UserType customizado para persistir o Value Object Cnpj como VARCHAR no banco de dados.
-/// </summary>
+// UserType customizado para persistir o Value Object Cnpj como VARCHAR no banco de dados
 public class CnpjUserType : IUserType
 {
     public SqlType[] SqlTypes => new[] { new SqlType(DbType.String) };
@@ -46,9 +44,7 @@ public class CnpjUserType : IUserType
         return x?.GetHashCode() ?? 0;
     }
 
-    /// <summary>
-    /// Converte o valor do banco de dados (string) para o Value Object Cnpj.
-    /// </summary>
+    // Converte o valor do banco de dados (string) para o Value Object Cnpj
     public object? NullSafeGet(DbDataReader leitor, string[] nomes, ISessionImplementor sessao, object proprietario)
     {
         var valor = leitor[nomes[0]];
@@ -69,9 +65,7 @@ public class CnpjUserType : IUserType
         }
     }
 
-    /// <summary>
-    /// Converte o Value Object Cnpj para string para persistir no banco de dados.
-    /// </summary>
+    // Converte o Value Object Cnpj para string para persistir no banco de dados
     public void NullSafeSet(DbCommand comando, object? valor, int indice, ISessionImplementor sessao)
     {
         if (valor == null)
