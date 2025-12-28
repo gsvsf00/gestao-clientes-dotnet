@@ -6,9 +6,7 @@ using NHibernate.Linq;
 
 namespace GestaoClientes.Infrastructure.Repositories;
 
-/// <summary>
-/// Implementação do repositório de clientes utilizando NHibernate.
-/// </summary>
+// Implementação do repositório de clientes utilizando NHibernate
 public class ClienteRepositoryNHibernate : IClienteRepository
 {
     private readonly ISession _sessao;
@@ -18,17 +16,13 @@ public class ClienteRepositoryNHibernate : IClienteRepository
         _sessao = sessao;
     }
 
-    /// <summary>
-    /// Busca um cliente pelo ID.
-    /// </summary>
+    // Busca um cliente pelo ID
     public async Task<Cliente?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _sessao.GetAsync<Cliente>(id, cancellationToken);
     }
 
-    /// <summary>
-    /// Busca um cliente pelo CNPJ.
-    /// </summary>
+    // Busca um cliente pelo CNPJ
     public async Task<Cliente?> GetByCnpjAsync(Cnpj cnpj, CancellationToken cancellationToken = default)
     {
         return await _sessao.Query<Cliente>()
@@ -36,9 +30,7 @@ public class ClienteRepositoryNHibernate : IClienteRepository
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    /// <summary>
-    /// Adiciona um novo cliente ao banco de dados.
-    /// </summary>
+    // Adiciona um novo cliente ao banco de dados
     public async Task<Cliente> AddAsync(Cliente cliente, CancellationToken cancellationToken = default)
     {
         await _sessao.SaveAsync(cliente, cancellationToken);

@@ -8,17 +8,13 @@ using System.Reflection;
 
 namespace GestaoClientes.Infrastructure.Persistence.NHibernate;
 
-/// <summary>
-/// Factory para criação de ISessionFactory do NHibernate configurado com SQLite.
-/// </summary>
+// Factory para criação de ISessionFactory do NHibernate configurado com SQLite
 public class NHibernateSessionFactory
 {
     private static ISessionFactory? _fabricaDeSessao;
     private static readonly object _bloqueio = new object();
 
-    /// <summary>
-    /// Cria uma ISessionFactory configurada com SQLite usando connection string fornecida.
-    /// </summary>
+    // Cria uma ISessionFactory configurada com SQLite usando connection string fornecida
     public static ISessionFactory GetSessionFactory(string stringDeConexao)
     {
         if (_fabricaDeSessao == null)
@@ -54,9 +50,7 @@ public class NHibernateSessionFactory
         return _fabricaDeSessao;
     }
 
-    /// <summary>
-    /// Cria uma ISessionFactory configurada com SQLite em memória para testes.
-    /// </summary>
+    // Cria uma ISessionFactory configurada com SQLite em memória para testes
     public static ISessionFactory GetInMemorySessionFactory()
     {
         if (_fabricaDeSessao == null)
