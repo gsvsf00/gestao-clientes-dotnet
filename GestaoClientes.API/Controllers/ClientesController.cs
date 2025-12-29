@@ -48,7 +48,7 @@ public class ClientesController : ControllerBase
     [ProducesResponseType(typeof(ClienteDetalhesResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(
-        Guid id,
+        int id,
         CancellationToken cancellationToken)
     {
         var query = new ObtemClientePorIdQuery { Id = id };

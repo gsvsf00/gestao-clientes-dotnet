@@ -17,7 +17,7 @@ public class ClienteRepositoryNHibernate : IClienteRepository
     }
 
     // Busca um cliente pelo ID
-    public async Task<Cliente?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Cliente?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return await _sessao.GetAsync<Cliente>(id, cancellationToken);
     }
