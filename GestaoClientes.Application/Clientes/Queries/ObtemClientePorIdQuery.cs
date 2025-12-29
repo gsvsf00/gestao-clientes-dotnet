@@ -2,7 +2,7 @@ namespace GestaoClientes.Application.Clientes.Queries;
 
 public class ObtemClientePorIdQuery
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 }
 
 

@@ -27,7 +27,7 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
 
     // Busca um cliente pelo ID, consultando primeiro o cache Redis.
     // Se não encontrar no cache, consulta o repositório real e popula o cache.
-    public async Task<Cliente?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Cliente?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var chaveCache = ObterChaveCache(id);
         
@@ -94,7 +94,13 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
         return clienteAdicionado;
     }
 
-    private static string ObterChaveCache(Guid id)
+    // Busca todos os clientes (não usa cache, sempre consulta repositório real)
+    public async Task<IEnumerable<Cliente>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _repositorioReal.GetAllAsync(cancellationToken);
+    }
+
+    private static string ObterChaveCache(int id)
     {
         return $"{ChaveCachePrefix}{id}";
     }
@@ -168,7 +174,7 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
 
     private class ClienteCacheDto
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string NomeFantasia { get; set; } = string.Empty;
         public string Cnpj { get; set; } = string.Empty;
         public bool Ativo { get; set; }

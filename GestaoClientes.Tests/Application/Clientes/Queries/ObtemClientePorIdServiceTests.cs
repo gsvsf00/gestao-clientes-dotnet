@@ -22,7 +22,7 @@ public class ObtemClientePorIdServiceTests
     public async Task HandleAsync_ComClienteExistente_DeveRetornarDetalhes()
     {
         // Arrange
-        var clienteId = Guid.NewGuid();
+        var clienteId = 1;
         var cliente = new Cliente("Empresa Teste LTDA", new Cnpj("01775634000189"));
         
         // Usar reflection para definir o Id (já que é protected set)
@@ -55,7 +55,7 @@ public class ObtemClientePorIdServiceTests
     public async Task HandleAsync_ComClienteInexistente_DeveRetornarNull()
     {
         // Arrange
-        var clienteId = Guid.NewGuid();
+        var clienteId = 999;
         var query = new ObtemClientePorIdQuery { Id = clienteId };
 
         _mockRepository
@@ -77,7 +77,7 @@ public class ObtemClientePorIdServiceTests
     public async Task HandleAsync_ComClienteDesativado_DeveRetornarComAtivoFalse()
     {
         // Arrange
-        var clienteId = Guid.NewGuid();
+        var clienteId = 2;
         var cliente = new Cliente("Empresa Teste LTDA", new Cnpj("01775634000189"));
         cliente.Desativar();
         
@@ -106,7 +106,7 @@ public class ObtemClientePorIdServiceTests
     public async Task HandleAsync_DeveFormatarCnpjCorretamente()
     {
         // Arrange
-        var clienteId = Guid.NewGuid();
+        var clienteId = 3;
         var cliente = new Cliente("Empresa Teste LTDA", new Cnpj("90942116000132"));
         
         var idProperty = typeof(Cliente).BaseType!.GetProperty("Id");
@@ -130,7 +130,7 @@ public class ObtemClientePorIdServiceTests
     public async Task HandleAsync_DeveIncluirDataCriacaoEAtualizacao()
     {
         // Arrange
-        var clienteId = Guid.NewGuid();
+        var clienteId = 4;
         var cliente = new Cliente("Empresa Teste LTDA", new Cnpj("01775634000189"));
         
         var idProperty = typeof(Cliente).BaseType!.GetProperty("Id");
