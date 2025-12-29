@@ -94,6 +94,12 @@ public class ClienteRepositoryCacheDecorator : IClienteRepository
         return clienteAdicionado;
     }
 
+    // Busca todos os clientes (não usa cache, sempre consulta repositório real)
+    public async Task<IEnumerable<Cliente>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _repositorioReal.GetAllAsync(cancellationToken);
+    }
+
     private static string ObterChaveCache(int id)
     {
         return $"{ChaveCachePrefix}{id}";

@@ -38,5 +38,11 @@ public class ClienteRepositoryNHibernate : IClienteRepository
         await _sessao.FlushAsync(cancellationToken);
         return cliente;
     }
+
+    // Busca todos os clientes
+    public async Task<IEnumerable<Cliente>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _sessao.Query<Cliente>().ToListAsync(cancellationToken);
+    }
 }
 
