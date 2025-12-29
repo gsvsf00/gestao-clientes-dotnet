@@ -37,14 +37,20 @@ public class CriaClienteServiceTests
 
         _mockRepository
             .Setup(r => r.AddAsync(It.IsAny<Cliente>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Cliente c, CancellationToken ct) => c);
+            .ReturnsAsync((Cliente c, CancellationToken ct) => 
+            {
+                // Simula o NHibernate atribuindo um ID auto-increment
+                var idProperty = typeof(Cliente).BaseType!.GetProperty("Id");
+                idProperty!.SetValue(c, 1);
+                return c;
+            });
 
         // Act
         var resultado = await _service.HandleAsync(command, CancellationToken.None);
 
         // Assert
         Assert.NotNull(resultado);
-        Assert.NotEqual(Guid.Empty, resultado.Id);
+        Assert.Equal(1, resultado.Id);
         Assert.Equal(command.NomeFantasia, resultado.NomeFantasia);
         Assert.Equal("01.775.634/0001-89", resultado.Cnpj);
         Assert.True(resultado.Ativo);

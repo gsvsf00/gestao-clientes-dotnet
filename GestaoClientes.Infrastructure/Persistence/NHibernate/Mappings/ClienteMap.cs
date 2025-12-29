@@ -14,7 +14,7 @@ public class ClienteMap : ClassMapping<Cliente>
         Id(cliente => cliente.Id, mapeamento =>
         {
             mapeamento.Column("Id");
-            mapeamento.Generator(Generators.Guid);
+            mapeamento.Generator(Generators.Identity);
         });
 
         Property(cliente => cliente.NomeFantasia, mapeamento =>

@@ -51,7 +51,8 @@ namespace GestaoClientes.Tests.Domain.Entities
             Assert.Equal(nomeValido, cliente.NomeFantasia);
             Assert.Equal(_cnpjPadrao, cliente.Cnpj); // Comparação por valor do Value Object
             Assert.True(cliente.Ativo);
-            Assert.NotEqual(Guid.Empty, cliente.Id);
+            // Id será 0 até ser persistido pelo NHibernate (auto-increment)
+            Assert.Equal(0, cliente.Id);
             Assert.NotNull(cliente.DataCriacao);
         }
 

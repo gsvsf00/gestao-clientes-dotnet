@@ -12,13 +12,16 @@ public class ClientesController : ControllerBase
 {
     private readonly ICriaClienteService _criaClienteService;
     private readonly IObtemClientePorIdService _obtemClientePorIdService;
+    private readonly IObtemTodosClientesService _obtemTodosClientesService;
 
     public ClientesController(
         ICriaClienteService criaClienteService,
-        IObtemClientePorIdService obtemClientePorIdService)
+        IObtemClientePorIdService obtemClientePorIdService,
+        IObtemTodosClientesService obtemTodosClientesService)
     {
         _criaClienteService = criaClienteService;
         _obtemClientePorIdService = obtemClientePorIdService;
+        _obtemTodosClientesService = obtemTodosClientesService;
     }
 
     // Cria um novo cliente
@@ -43,12 +46,22 @@ public class ClientesController : ControllerBase
         }
     }
 
+    // Obtém todos os clientes
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<ClienteDetalhesResult>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    {
+        var query = new ObtemTodosClientesQuery();
+        var resultado = await _obtemTodosClientesService.HandleAsync(query, cancellationToken);
+        return Ok(resultado);
+    }
+
     // Obtém um cliente pelo ID
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ClienteDetalhesResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(
-        Guid id,
+        int id,
         CancellationToken cancellationToken)
     {
         var query = new ObtemClientePorIdQuery { Id = id };
