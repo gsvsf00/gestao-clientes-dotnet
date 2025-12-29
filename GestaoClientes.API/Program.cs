@@ -42,7 +42,6 @@ builder.Services.AddScoped<IClienteRepository>(provider =>
 builder.Services.AddScoped<ICriaClienteService, CriaClienteService>();
 builder.Services.AddScoped<IObtemClientePorIdService, ObtemClientePorIdService>();
 builder.Services.AddScoped<IObtemTodosClientesService, ObtemTodosClientesService>();
-builder.Services.AddScoped<IObtemTodosClientesService, ObtemTodosClientesService>();
 
 // Add services to the container.
 builder.Services.AddControllers();

@@ -14,6 +14,7 @@ API para gestão de clientes desenvolvida em .NET 9, seguindo os princípios de 
 ## Funcionalidades
 
 - Cadastro de clientes com validação de CNPJ
+- Listagem de todos os clientes
 - Consulta de cliente por ID
 - Validação de CNPJ duplicado
 - Cache com Redis para otimização de leituras
@@ -62,6 +63,23 @@ Cadastra um novo cliente.
   "cnpj": "12.345.678/0001-95",
   "ativo": true
 }
+```
+
+### GET /api/clientes
+Lista todos os clientes cadastrados.
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "nomeFantasia": "Empresa Exemplo LTDA",
+    "cnpj": "12.345.678/0001-95",
+    "ativo": true,
+    "dataCriacao": "2025-12-29T10:30:00Z",
+    "dataAtualizacao": "2025-12-29T10:30:00Z"
+  }
+]
 ```
 
 ### GET /api/clientes/{id}
